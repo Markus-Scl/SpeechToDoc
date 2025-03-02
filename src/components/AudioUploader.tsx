@@ -81,7 +81,7 @@ const AudioUploader = () => {
 	};
 
 	return (
-		<div className="flex flex-col items-center justify-center p-6 w-full max-w-md mx-auto bg-base-100 shadow-xl rounded-xl">
+		<div className="flex flex-col items-center justify-center p-6 w-full max-w-md mx-auto bg-base-100 shadow-xl rounded-xl mt-10">
 			{/* Upload Area */}
 			<div
 				className="border-2 border-dashed border-gray-300 rounded-lg p-6 w-full flex flex-col items-center justify-center cursor-pointer hover:border-accent transition-all"
@@ -113,7 +113,7 @@ const AudioUploader = () => {
 
 			{/* Record Button */}
 			<button
-				className={`btn btn-accent mt-4 w-full flex items-center justify-center gap-2 transition-all ${isRecording ? 'animate-pulse bg-red-500' : ''}`}
+				className={`btn btn-accent mt-4 w-full flex items-center justify-center gap-2 transition-all ${isRecording ? 'animate-pulse' : ''}`}
 				onClick={isRecording ? stopRecording : startRecording}>
 				{isRecording ? <Stop fontSize="small" /> : <Mic fontSize="small" />}
 				{isRecording ? 'Stop Recording' : 'Start Recording'}

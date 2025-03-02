@@ -1,7 +1,11 @@
 import {useState, useRef} from 'react';
 import {CloudUpload, Description, PictureAsPdf, Delete} from '@mui/icons-material';
 
-const FileUploader = () => {
+interface FileUploaderProps {
+	onFileUpload: (file: File) => void; // Prop type for the upload handler
+}
+
+const FileUploader = ({onFileUpload}: FileUploaderProps) => {
 	const [file, setFile] = useState<File | null>(null);
 	const [isDragging, setIsDragging] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -10,6 +14,7 @@ const FileUploader = () => {
 		const selectedFile = event.target.files?.[0];
 		if (selectedFile && validateFile(selectedFile)) {
 			setFile(selectedFile);
+			onFileUpload(selectedFile);
 		}
 	};
 
