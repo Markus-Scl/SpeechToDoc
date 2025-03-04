@@ -19,7 +19,7 @@ function App() {
 				<AudioUploader />
 			</div>
 			<div className="w-2/4 h-7/10 bg-teal-100 p-4 shadow-xl rounded-xl flex flex-col justify center ml-10">
-				<WordEditor />
+				<WordEditor uploadedFile={uploadedFile} />
 			</div>
 		</div>
 	);
