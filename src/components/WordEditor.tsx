@@ -19,12 +19,11 @@ const WordEditor: React.FC<WordEditorProps> = ({uploadedFile}) => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [error, setError] = useState<string | null>(null);
 
-	// Initialize TipTap editor
 	const editor = useEditor({
 		extensions: [
-			StarterKit, // Basic features: bold, italic, paragraphs, lists, etc.
+			StarterKit,
 			Heading.configure({
-				levels: [1, 2, 3], // Support H1, H2, H3
+				levels: [1, 2, 3],
 			}),
 		],
 		content: docContent.html,
@@ -45,7 +44,7 @@ const WordEditor: React.FC<WordEditorProps> = ({uploadedFile}) => {
 
 	useEffect(() => {
 		if (editor && docContent.html) {
-			editor.commands.setContent(docContent.html); // Update editor when content changes
+			editor.commands.setContent(docContent.html);
 		}
 	}, [docContent.html, editor]);
 
@@ -55,11 +54,10 @@ const WordEditor: React.FC<WordEditorProps> = ({uploadedFile}) => {
 		try {
 			const arrayBuffer = await file.arrayBuffer();
 			const result = await mammoth.convertToHtml({arrayBuffer});
-			const html: string = result.value;
-			setDocContent({html});
+			setDocContent({html: result.value});
 		} catch (error) {
 			console.error('Error parsing document:', error);
-			setError('Failed to parse the document. Ensure it’s a valid .docx file.');
+			setError('Failed to parse the document.');
 		} finally {
 			setLoading(false);
 		}
@@ -76,12 +74,10 @@ const WordEditor: React.FC<WordEditorProps> = ({uploadedFile}) => {
 		});
 
 		Packer.toBlob(doc)
-			.then((blob: Blob) => {
-				saveAs(blob, 'edited-document.docx');
-			})
+			.then((blob: Blob) => saveAs(blob, 'edited-document.docx'))
 			.catch((error: unknown) => {
 				console.error('Error generating document:', error);
-				alert('Failed to generate the document.');
+				alert('Failed to generate document.');
 			});
 	};
 
@@ -115,65 +111,83 @@ const WordEditor: React.FC<WordEditorProps> = ({uploadedFile}) => {
 						})
 					);
 					break;
-				// Add more cases (e.g., STRONG, UL, LI) as needed
+				case 'STRONG':
+					elements.push(
+						new Paragraph({
+							children: [new TextRun({text: node.textContent || '', bold: true})],
+						})
+					);
+					break;
+				case 'EM':
+					elements.push(
+						new Paragraph({
+							children: [new TextRun({text: node.textContent || '', italics: true})],
+						})
+					);
+					break;
 			}
 		});
-
 		return elements;
 	};
 
 	return (
-		<div className="p-5 max-w-4xl mx-auto">
+		<div className="w-3/4 h-full p-5 max-w-4xl mx-auto">
 			<h2 className="text-2xl font-bold mb-5 text-accent">Edit Your Word Document</h2>
 
 			{error ? (
-				<div className="alert alert-error mb-4">
+				<div className="alert alert-error mb-4 animate-fade-in">
 					<svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
 						<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
 					</svg>
 					<span>{error}</span>
 				</div>
 			) : loading ? (
-				<div className="flex justify-center">
-					<span className="loading loading-spinner text-accent"></span>
+				<div className="flex justify-center items-center h-64">
+					<span className="loading loading-spinner text-accent text-4xl"></span>
 				</div>
 			) : (
 				<div className="space-y-4">
-					{/* TipTap Toolbar */}
 					{editor && (
-						<div className="flex flex-wrap gap-2 mb-2 bg-base-200 p-2 rounded-lg border border-accent">
+						<div className="bg-base-200 p-3 rounded-lg border border-accent shadow-md flex flex-wrap gap-2">
 							<button
 								onClick={() => editor.chain().focus().toggleHeading({level: 1}).run()}
-								className={`btn btn-sm ${editor.isActive('heading', {level: 1}) ? 'btn-accent' : 'btn-ghost'}`}>
+								className={`btn btn-sm transition-colors duration-200 ${editor.isActive('heading', {level: 1}) ? 'btn-accent' : 'btn-ghost'}`}>
 								H1
 							</button>
 							<button
 								onClick={() => editor.chain().focus().toggleHeading({level: 2}).run()}
-								className={`btn btn-sm ${editor.isActive('heading', {level: 2}) ? 'btn-accent' : 'btn-ghost'}`}>
+								className={`btn btn-sm transition-colors duration-200 ${editor.isActive('heading', {level: 2}) ? 'btn-accent' : 'btn-ghost'}`}>
 								H2
 							</button>
-							<button onClick={() => editor.chain().focus().toggleBold().run()} className={`btn btn-sm ${editor.isActive('bold') ? 'btn-accent' : 'btn-ghost'}`}>
+							<button
+								onClick={() => editor.chain().focus().toggleBold().run()}
+								className={`btn btn-sm transition-colors duration-200 ${editor.isActive('bold') ? 'btn-accent' : 'btn-ghost'}`}>
 								Bold
 							</button>
-							<button onClick={() => editor.chain().focus().toggleItalic().run()} className={`btn btn-sm ${editor.isActive('italic') ? 'btn-accent' : 'btn-ghost'}`}>
+							<button
+								onClick={() => editor.chain().focus().toggleItalic().run()}
+								className={`btn btn-sm transition-colors duration-200 ${editor.isActive('italic') ? 'btn-accent' : 'btn-ghost'}`}>
 								Italic
 							</button>
-							<button onClick={() => editor.chain().focus().toggleBulletList().run()} className={`btn btn-sm ${editor.isActive('bulletList') ? 'btn-accent' : 'btn-ghost'}`}>
+							<button
+								onClick={() => editor.chain().focus().toggleBulletList().run()}
+								className={`btn btn-sm transition-colors duration-200 ${editor.isActive('bulletList') ? 'btn-accent' : 'btn-ghost'}`}>
 								List
 							</button>
-							<button onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()} className="btn btn-sm btn-ghost">
+							<button onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()} className="btn btn-sm btn-ghost transition-colors duration-200">
 								Clear
 							</button>
 						</div>
 					)}
 
-					{/* TipTap Editor */}
-					<div className="bg-base-100 border border-accent rounded-lg p-4">
-						<EditorContent editor={editor} />
+					<div className="bg-base-100 max-h-[400px] overflow-y-auto border border-accent rounded-lg p-4 shadow-inner">
+						<EditorContent editor={editor} className="prose max-w-none" />
 					</div>
 
-					{/* Generate Button */}
-					<button onClick={generateDocx} disabled={!docContent.html || loading} className="btn btn-accent w-full">
+					<button
+						onClick={generateDocx}
+						disabled={!docContent.html || loading}
+						className="btn btn-accent w-full py-3 transition-all duration-300 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
 						Generate Word Document
 					</button>
 				</div>
